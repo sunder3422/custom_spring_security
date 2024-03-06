@@ -14,12 +14,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.text.Normalizer;
 
 @Configuration
 @AllArgsConstructor
 public class SpringSecurityConfig {
     @Autowired
-    private UserDetailsService userDetailsService;
+//    private UserDetailsService userDetailsService;
 
     @Bean
     public static PasswordEncoder passwordEncoder()
@@ -32,9 +36,20 @@ public class SpringSecurityConfig {
         http
                 .authorizeHttpRequests((request)->
                         request
-                                .requestMatchers("/login").hasRole("USER")
-                                .requestMatchers("/welcome").hasRole("ADMIN")
+                                .requestMatchers("/usedetails").hasRole("ADMIN")
+                                .requestMatchers("/welcome").hasAnyRole("USER","ADMIN")
                                 .anyRequest().authenticated())
+                .formLogin(form->
+                        form
+                                .loginPage("/login")
+                                .loginProcessingUrl("/login")
+                                .defaultSuccessUrl("/welcome")
+                                .permitAll()
+                ).logout(
+                        logout->logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                .permitAll()
+                )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }

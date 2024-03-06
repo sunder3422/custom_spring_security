@@ -18,9 +18,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true) //username will be unique
     private String username;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true) //email will be unique
     private String email;
     @Column(nullable = false)
     private String password;
